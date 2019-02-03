@@ -10,7 +10,7 @@ jobs:
           name: Install bootimage
           command: cargo install bootimage --version "^0.5.0" --force
       - save_cache:
-          key: v1-cargo
+          key: v2-cargo
           paths:
             - /usr/local/cargo/
       - save_cache:
@@ -23,7 +23,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-cargo
+          key: v2-cargo
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -48,7 +48,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-cargo
+          key: v2-cargo
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -70,7 +70,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-cargo
+          key: v2-cargo
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
