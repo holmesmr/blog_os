@@ -11,10 +11,6 @@ jobs:
           paths:
             - /usr/local/cargo/
       - restore_cache:
-          key: v1-rustup-checkpoint
-          paths:
-            - /usr/local/rustup/
-      - restore_cache:
           key: v1-target-checkpoint
           paths:
             - ~/target
@@ -37,10 +33,6 @@ jobs:
           paths:
             - /usr/local/cargo/
       - save_cache:
-          key: v1-rustup-checkpoint
-          paths:
-            - /usr/local/rustup/
-      - save_cache:
           key: v1-target-checkpoint
           paths:
             - ~/target
@@ -49,9 +41,9 @@ jobs:
           paths:
             - /usr/local/cargo/
       - save_cache:
-          key: v1-rustup-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-compiler-src-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - /usr/local/rustup/
+            - /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src
       - save_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -64,7 +56,7 @@ jobs:
       - restore_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v1-rustup-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-compiler-src-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -113,7 +105,7 @@ jobs:
       - restore_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v1-rustup-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-compiler-src-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
