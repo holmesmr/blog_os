@@ -16,6 +16,9 @@ jobs:
       - run:
           name: Install cargo-xbuild
           command: cargo install cargo-xbuild --force
+      - run:
+          name: Install compiler source
+          command: rustup component add rust-src
       - save_cache:
           key: v1-cargo-checkpoint
           paths:
@@ -92,7 +95,7 @@ jobs:
             echo 'export PATH="/usr/local/cargo/bin:$PATH"' >> $BASH_ENV
       - run:
           name: Install QEMU
-          command: apt-get -y update && apt-get -y install qemu-system-x86_64
+          command: apt-get -y update && apt-get -y install qemu-system-x86
       - run:
           name: Run integration tests
           command: bash ./kbuild.sh integration-test
