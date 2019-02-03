@@ -75,6 +75,12 @@ jobs:
           key: v1-cargo-local-{{ checksum "Cargo.lock" }}
           paths:
             - ~/blog_os/target
+      - store_artifacts:
+          path: ~/blog_os/target/x86_64-blog_os/debug/bootimage-blog_os.bin
+          destination: images/bootimage-blog_os-debug.bin
+      - store_artifacts:
+          path: ~/blog_os/target/x86_64-blog_os/release/bootimage-blog_os.bin
+          destination: images/bootimage-blog_os-release.bin
   test:
     docker:
       - image: rustlang/rust:nightly
