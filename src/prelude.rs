@@ -1,5 +1,1 @@
-pub use crate::{
-    print,
-    println,
-    kernel_entrypoint
-};
+pub use crate::{kernel_entrypoint, print, println};

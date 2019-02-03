@@ -3,7 +3,7 @@
 
 use blog_os::integration_prelude::*;
 
-kernel_integration_test!{{
+kernel_integration_test! {{
     serial_println!("ok");
 
     pass_integration_test();

@@ -2,6 +2,8 @@
 
 read -r -d '' INTEGRATION_TESTS <<-'END_TESTS'
     basic-boot
+    breakpoint
+    double-fault
     panic
 END_TESTS
 

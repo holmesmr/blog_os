@@ -1,9 +1,6 @@
 pub use crate::{
-    serial_print,
+    integration_fail_on_panic, integration_pass_on_panic, kernel_integration_test, serial_print,
     serial_println,
-    kernel_integration_test,
-    integration_fail_on_panic,
-    integration_pass_on_panic
 };
 
 #[cfg(feature = "integration-test")]
