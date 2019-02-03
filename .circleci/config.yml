@@ -12,7 +12,7 @@ jobs:
       - save_cache:
           key: v1-cargo
           paths:
-            - ~/.cargo
+            - /usr/local/cargo/
       - save_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -28,6 +28,10 @@ jobs:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-cargo-local-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Setup environment
+          command: |
+            echo 'export PATH="/usr/local/cargo/bin:$PATH"' >> $BASH_ENV
       - run:
           name: Build release
           command: bash ./kbuild.sh build release
@@ -50,6 +54,10 @@ jobs:
       - restore_cache:
           key: v1-cargo-local-{{ checksum "Cargo.lock" }}
       - run:
+          name: Setup environment
+          command: |
+            echo 'export PATH="/usr/local/cargo/bin:$PATH"' >> $BASH_ENV
+      - run:
           name: Run unit tests
           command: bash ./kbuild.sh test
       - save_cache:
@@ -67,6 +75,10 @@ jobs:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-cargo-local-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Setup environment
+          command: |
+            echo 'export PATH="/usr/local/cargo/bin:$PATH"' >> $BASH_ENV
       - run:
           name: Install QEMU
           command: apt-get -y update && apt-get -y install qemu-system-x86_64
