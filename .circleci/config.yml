@@ -14,12 +14,21 @@ jobs:
           key: v1-rustup-checkpoint
           paths:
             - /usr/local/rustup/
+      - restore_cache:
+          key: v1-target-checkpoint
+          paths:
+            - ~/target
+      - run:
+          name: Prepare target workspaces
+          command: |
+            mkdir -p ~/target/bootimage
+            mkdir -p ~/target/cargo-xbuild
       - run:
           name: Install bootimage
-          command: cargo install bootimage --version "^0.5.0" --force
+          command: CARGO_TARGET_DIR=~/target/bootimage cargo install bootimage --version "^0.5.0" --force
       - run:
           name: Install cargo-xbuild
-          command: cargo install cargo-xbuild --force
+          command: CARGO_TARGET_DIR=~/target/cargo-xbuild cargo install cargo-xbuild --force
       - run:
           name: Install compiler source
           command: rustup component add rust-src
@@ -27,6 +36,14 @@ jobs:
           key: v1-cargo-checkpoint
           paths:
             - /usr/local/cargo/
+      - restore_cache:
+          key: v1-rustup-checkpoint
+          paths:
+            - /usr/local/rustup/
+      - save_cache:
+          key: v1-target-checkpoint
+          paths:
+            - ~/target
       - save_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
