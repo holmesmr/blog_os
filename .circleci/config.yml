@@ -36,7 +36,7 @@ jobs:
           key: v1-cargo-checkpoint
           paths:
             - /usr/local/cargo/
-      - restore_cache:
+      - save_cache:
           key: v1-rustup-checkpoint
           paths:
             - /usr/local/rustup/
