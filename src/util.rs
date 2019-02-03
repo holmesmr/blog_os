@@ -23,17 +23,27 @@ fn panic(info: &PanicInfo) -> ! {
 /// This function is called on panic in integration tests.
 #[cfg(feature = "integration-test")]
 #[cfg(not(test))]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
+pub fn fail_integration_test(info: Option<&PanicInfo>) {
     use crate::serial_println;
 
     serial_println!("[integration-test-result:fail]");
 
-    serial_println!("{}", info);
+    if let Some(info) = info {
+        serial_println!("{}", info);
+    }
 
     unsafe { exit_qemu(); }
-    loop {}
 }
+
+/// This function is called on panic in integration tests.
+#[cfg(feature = "integration-test")]
+#[cfg(not(test))]
+pub fn pass_integration_test() {
+    use crate::serial_println;
+
+    serial_println!("[integration-test-result:pass]");
+}
+
 
 #[macro_export]
 macro_rules! kernel_entrypoint {
@@ -58,26 +68,77 @@ macro_rules! kernel_entrypoint {
 }
 
 #[macro_export]
+#[cfg(feature = "integration-test")]
 macro_rules! kernel_integration_test {
     ($body:block) => (
-        #[cfg(feature = "integration-test")]
         #[cfg(not(test))]
         #[inline(always)]
         fn run_entrypoint() {
             $body
         }
 
-        #[cfg(feature = "integration-test")]
         #[cfg(not(test))]
         #[no_mangle]
         pub extern "C" fn _start() -> ! {
             run_entrypoint();
-
-            serial_println!("[integration-test-result:pass]");
 
             unsafe { $crate::util::exit_qemu(); }
 
             loop {}
         }
     )
+}
+
+
+#[macro_export]
+#[cfg(feature = "integration-test")]
+    macro_rules! integration_fail_on_panic {
+        () => (
+            use core::panic::PanicInfo;
+
+            #[cfg(not(test))]
+            #[panic_handler]
+            fn panic(info: &PanicInfo) -> ! {
+                fail_integration_test(core::option::Option::Some(info));
+
+                loop {}
+            }
+        )
+}
+
+#[macro_export]
+#[cfg(feature = "integration-test")]
+macro_rules! integration_pass_on_panic {
+        () => (
+            use core::panic::PanicInfo;
+
+            #[cfg(not(test))]
+            #[panic_handler]
+            fn panic(info: &PanicInfo) -> ! {
+                serial_println!("[integration-test-result:pass]");
+
+                unsafe { $crate::util::exit_qemu(); }
+
+                loop {}
+            }
+        )
+}
+
+
+#[macro_export]
+#[cfg(not(feature = "integration-test"))]
+macro_rules! kernel_integration_test {
+    ($_body:block) => ()
+}
+
+#[macro_export]
+#[cfg(not(feature = "integration-test"))]
+macro_rules! integration_fail_on_panic {
+    () => ()
+}
+
+#[macro_export]
+#[cfg(not(feature = "integration-test"))]
+macro_rules! integration_pass_on_panic {
+    () => ()
 }

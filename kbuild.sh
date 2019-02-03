@@ -2,6 +2,7 @@
 
 read -r -d '' INTEGRATION_TESTS <<-'END_TESTS'
     basic-boot
+    panic
 END_TESTS
 
 

@@ -1,12 +1,13 @@
 #![cfg_attr(not(test), no_std)]
 #![cfg_attr(not(test), no_main)]
+#![allow(unreachable_code)]
 
 use blog_os::integration_prelude::*;
 
 kernel_integration_test!{{
-    serial_println!("ok");
+    panic!("test panic");
 
-    pass_integration_test();
+    fail_integration_test(None);
 }}
 
-integration_fail_on_panic!();
+integration_pass_on_panic!();
