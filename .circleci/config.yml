@@ -1,13 +1,93 @@
 version: 2
 jobs:
-  build:
+  prepare_image:
     docker:
-      - image: debian:stretch
+      - image: rustlang/rust:nightly
+    working_directory: ~/blog_os
     steps:
       - checkout
       - run:
-          name: Greeting
-          command: echo Hello, world.
+          name: Install bootimage
+          command: cargo install bootimage --version "^0.5.0" --force
+      - save_cache:
+          key: v1-cargo
+          paths:
+            - ~/.cargo
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/blog_os
+  build:
+    docker:
+      - image: rustlang/rust:nightly
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-cargo
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-cargo-local-{{ checksum "Cargo.lock" }}
       - run:
-          name: Print the Current Time
-          command: date
+          name: Build release
+          command: bash ./kbuild.sh build release
+      - run:
+          name: Build debug
+          command: bash ./kbuild.sh build debug
+      - save_cache:
+          key: v1-cargo-local-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/blog_os/target
+  test:
+    docker:
+      - image: rustlang/rust:nightly
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-cargo
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-cargo-local-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Run unit tests
+          command: bash ./kbuild.sh test
+      - save_cache:
+          key: v1-cargo-local-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/blog_os/target
+  integration_test:
+    docker:
+      - image: rustlang/rust:nightly
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-cargo
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-cargo-local-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Install QEMU
+          command: apt-get -y update && apt-get -y install qemu-system-x86_64
+      - run:
+          name: Run integration tests
+          command: bash ./kbuild.sh integration-test
+      - save_cache:
+          key: v1-cargo-local-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/blog_os/target
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - prepare_image
+      - build:
+          requires:
+            - prepare_image
+      - test:
+          requires:
+            - prepare_image
+      - integration_test:
+          requires:
+            - prepare_image
