@@ -6,11 +6,22 @@ jobs:
     working_directory: ~/blog_os
     steps:
       - checkout
+      - restore_cache:
+          key: v1-cargo-checkpoint
+          paths:
+            - /usr/local/cargo/
       - run:
           name: Install bootimage
           command: cargo install bootimage --version "^0.5.0" --force
+      - run:
+          name: Install cargo-xbuild
+          command: cargo install cargo-xbuild --force
       - save_cache:
-          key: v2-cargo
+          key: v1-cargo-checkpoint
+          paths:
+            - /usr/local/cargo/
+      - save_cache:
+          key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - /usr/local/cargo/
       - save_cache:
@@ -23,7 +34,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-cargo
+          key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -48,7 +59,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-cargo
+          key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -70,7 +81,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-cargo
+          key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
