@@ -51,8 +51,8 @@ jobs:
   build:
     docker:
       - image: rustlang/rust:nightly
+    working_directory: ~/blog_os
     steps:
-      - checkout
       - restore_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -84,8 +84,8 @@ jobs:
   test:
     docker:
       - image: rustlang/rust:nightly
+    working_directory: ~/blog_os
     steps:
-      - checkout
       - restore_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -106,8 +106,8 @@ jobs:
   integration_test:
     docker:
       - image: rustlang/rust:nightly
+    working_directory: ~/blog_os
     steps:
-      - checkout
       - restore_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
