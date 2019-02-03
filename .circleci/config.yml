@@ -10,6 +10,10 @@ jobs:
           key: v1-cargo-checkpoint
           paths:
             - /usr/local/cargo/
+      - restore_cache:
+          key: v1-rustup-checkpoint
+          paths:
+            - /usr/local/rustup/
       - run:
           name: Install bootimage
           command: cargo install bootimage --version "^0.5.0" --force
@@ -28,6 +32,10 @@ jobs:
           paths:
             - /usr/local/cargo/
       - save_cache:
+          key: v1-rustup-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - /usr/local/rustup/
+      - save_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/blog_os
@@ -38,6 +46,8 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-rustup-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -85,6 +95,8 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-cargo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-rustup-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
